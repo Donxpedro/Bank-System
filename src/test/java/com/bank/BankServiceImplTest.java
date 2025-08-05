@@ -1,52 +1,39 @@
 package com.bank;
 
-import com.bank.service.impl.BankServiceImpl;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
+import com.bank.service.impl.BankServiceImpl;
+
 public class BankServiceImplTest {
-    private BankServiceImpl bankserviceImpl = new BankServiceImpl();
+    private BankServiceImpl bankService = new BankServiceImpl();
+    private BankAccount account = new BankAccount("TestUser", "123");
 
-    private BankAccount bankAccount = new BankAccount("Lisa", "2");
-
-//best case scenarios
     @Test
-    public void testThatWithdrawMethodWithdrawsAmountWhenBalanceIsNotBelowAmount(){
-        bankAccount.setBalance(200);
-        double amount = 100;
-        double balance = bankAccount.getBalance() - amount;
-        bankserviceImpl.withdraw(bankAccount, amount);
-        Assertions.assertEquals(balance, bankAccount.getBalance());
+    public void testDepositPositiveAmount() {
+        account.setBalance(100);
+        bankService.deposit(account, 50);
+        assertEquals(150, account.getBalance());
     }
 
-        @Test
-        public void testThatDepositMethodDepositsAmountWhenAmountIsNotNegative(){
-            bankAccount.setBalance(200);
-            double amount = 100;
-            double balance = bankAccount.getBalance() + amount;
-            bankserviceImpl.deposit(bankAccount, amount);
-            Assertions.assertEquals(balance, bankAccount.getBalance());
-        }
-
-        //If user tries to withdraw too much
-        @Test
-    public void testThatWithdrawMethodDoesNotWithdrawWhenToHighWithdrawAmountIsPassed(){
-            bankAccount.setBalance(200);
-            double amount = 300;
-            double balance = bankAccount.getBalance();
-            bankserviceImpl.withdraw(bankAccount, amount);
-            Assertions.assertEquals(balance, bankAccount.getBalance());
-        }
-
-        //If user tries to deposit -100
     @Test
-    public void testThatDepositMethodDoesNotDepositWhenPassedNegativeAmount(){
-        bankAccount.setBalance(200);
-        double amount = -100;
-        double balance = bankAccount.getBalance();
-        bankserviceImpl.deposit(bankAccount, amount);
-        Assertions.assertEquals(balance, bankAccount.getBalance());
+    public void testDepositNegativeAmount() {
+        account.setBalance(100);
+        bankService.deposit(account, -50);
+        assertEquals(100, account.getBalance()); // Balance shouldn't change
     }
 
+    @Test
+    public void testWithdrawValidAmount() {
+        account.setBalance(100);
+        bankService.withdraw(account, 30);
+        assertEquals(70, account.getBalance());
+    }
 
+    @Test
+    public void testWithdrawExceedingBalance() {
+        account.setBalance(100);
+        bankService.withdraw(account, 150);
+        assertEquals(100, account.getBalance()); // Balance shouldn't change
+    }
 }
